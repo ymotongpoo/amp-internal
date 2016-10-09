@@ -1,0 +1,9 @@
+baseurl = "https://ymotongpoo.github.io/amp-internal/"
+title = "AMP internal"
+languageCode = "en-us"
+copyright = "source code in the docuements are all from AMP team under Apache License 2.0. texts are under Apache License 2.0."
+
+[params]
+twitter = "amphtml"
+github = "ampproject"
+description = "Unofficial source code analysis of ampproject/amphtml"
