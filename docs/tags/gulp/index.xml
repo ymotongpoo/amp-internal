@@ -11,7 +11,7 @@
     <atom:link href="https://ymotongpoo.github.io/amp-internal/tags/gulp/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Generating AMP JS</title>
+      <title>1. Generating AMP JS</title>
       <link>https://ymotongpoo.github.io/amp-internal/post/gulp/</link>
       <pubDate>Tue, 11 Oct 2016 16:14:23 +0900</pubDate>
       
@@ -103,6 +103,8 @@ function compileJs(srcDir, srcFilename, destDir, options) {
   }
   ...
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;closurecompile:c34aea999ea1eeef6ae97c4fa3367837&#34;&gt;closureCompile()&lt;/h2&gt;
 
 &lt;p&gt;Ok, great. In the internal function &lt;code&gt;minify()&lt;/code&gt;, we see the line &lt;code&gt;closureCompile(srcDir + srcFilename, destDir, options.minifiedName, options)&lt;/code&gt;. &lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:c34aea999ea1eeef6ae97c4fa3367837:gulp1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; &lt;code&gt;closureCompile()&lt;/code&gt; is imported from &lt;code&gt;build-system/tasks/compile.js&lt;/code&gt;.&lt;/p&gt;
 

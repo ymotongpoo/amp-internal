@@ -5,7 +5,7 @@
   
   
   <meta charset="UTF-8">
-  <meta property="og:title" content="Generating AMP JS" />
+  <meta property="og:title" content="1. Generating AMP JS" />
   <meta property="og:type" content="article" />
   <meta property="og:url" contnet="https://ymotongpoo.github.io/amp-internal/post/gulp/" />
   <meta property="og:image" content="" />
@@ -15,7 +15,7 @@
   
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:url" content="https://ymotongpoo.github.io/amp-internal/post/gulp/" />
-  <meta name="twitter:title" content="Generating AMP JS" />
+  <meta name="twitter:title" content="1. Generating AMP JS" />
   <meta name="twitter:description" content="Preface Before digging into the repository of AMP HTML, let&rsquo;s see how AMP elements works in the browser at first hand. The specification of AMP HTML tag set is combination of subset of HTML5 and custom elements. All builtin custom elements and whole AMP runtime is implemented in AMP JS, which is hosted in the wild on https://cdn.ampproject.org/v0.js. Other third party extensional custom elements, such as amp-analytics, amp-ad and so on are handled in special JavaScript with the elements&rsquo; names." />
   <meta name="twitter:image" content="" />
   
@@ -24,7 +24,7 @@
   <link rel="stylesheet" href='/amp-internal/css/main.css'>
   <link rel="stylesheet" href='/amp-internal/css/monokai-sublime.css'>
 
-  <title>Generating AMP JS | AMP internal </title>
+  <title>1. Generating AMP JS | AMP internal </title>
 </head>
 
 <body>
@@ -46,7 +46,7 @@
   </header>
   <main id="index">
     <article>
-      <h1>Generating AMP JS</h1>
+      <h1>1. Generating AMP JS</h1>
       <div class="entry-meta">
         <span class="timestamp"><time>2016-10-11 16:14:23</time></span>
         
@@ -144,6 +144,8 @@ function compileJs(srcDir, srcFilename, destDir, options) {
   }
   ...
 </code></pre>
+
+<h2 id="closurecompile:c34aea999ea1eeef6ae97c4fa3367837">closureCompile()</h2>
 
 <p>Ok, great. In the internal function <code>minify()</code>, we see the line <code>closureCompile(srcDir + srcFilename, destDir, options.minifiedName, options)</code>. <sup class="footnote-ref" id="fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp1"><a rel="footnote" href="#fn:c34aea999ea1eeef6ae97c4fa3367837:gulp1">1</a></sup> <code>closureCompile()</code> is imported from <code>build-system/tasks/compile.js</code>.</p>
 
@@ -313,6 +315,7 @@ exports.closureCompile = function(entryModuleFilename, outputDir,
   </main>
   <nav>
     
+    <span class="prev">&lt;&lt;&nbsp;<a href="https://ymotongpoo.github.io/amp-internal/post/appendix_runner/">Appendix A: runner.jar</a></span>
     
   </nav>
   <footer>

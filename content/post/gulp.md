@@ -1,7 +1,7 @@
 +++
 date = "2016-10-11T16:14:23+09:00"
 draft = false
-title = "Generating AMP JS"
+title = "1. Generating AMP JS"
 tags = ["gulp", "gulpfule.js"]
 +++
 
@@ -94,6 +94,7 @@ function compileJs(srcDir, srcFilename, destDir, options) {
   ...
 ```
 
+## closureCompile()
 Ok, great. In the internal function `minify()`, we see the line `closureCompile(srcDir + srcFilename, destDir, options.minifiedName, options)`. [^gulp1] `closureCompile()` is imported from `build-system/tasks/compile.js`.
 
 ```js

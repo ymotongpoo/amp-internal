@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  
+  
+  <meta charset="UTF-8">
+  <meta property="og:title" content="Appendix A: runner.jar" />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" contnet="https://ymotongpoo.github.io/amp-internal/post/appendix_runner/" />
+  <meta property="og:image" content="" />
+  <meta property="og:site_name" content="AMP internal" />
+  <meta property="og:description" content="runner.jar In the chapter 1, we saw that option entry_point is passed to runner.jar and that is defining the entry point of v0.js. But how can we know runner.jar is Closure Compiler? In ./runner directory, you find build.xml which is Ant build file for runner.jar. &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt; &lt;project default=&quot;jar&quot; basedir=&quot;.&quot; name=&quot;runner&quot;&gt; ... &lt;property name=&quot;dir.buildfile&quot; value=&quot;.&quot;/&gt; &lt;property name=&quot;src.dir&quot; value=&quot;${basedir}/src&quot;/&gt; &lt;property name=&quot;test.dir&quot; value=&quot;${basedir}/test&quot;/&gt; &lt;property name=&quot;build.dir&quot; value=&quot;${basedir}/build&quot;/&gt; &lt;property name=&quot;lib.dir&quot; value=&quot;${basedir}/lib&quot;/&gt; &lt;property name=&quot;dist.dir&quot; value=&quot;${basedir}/dist&quot;/&gt; &lt;property name=&quot;runner-jarfile&quot; value=&quot;${build.dir}/${ant.project.name}.jar&quot;/&gt; &lt;property name=&quot;compiler.dir&quot; value=&quot;${basedir}/../../third_party/closure-compiler&quot;/&gt; &lt;property name=&quot;classes.dir&quot; value=&quot;${build.dir}/classes&quot;/&gt; ..." />
+  <meta property="og:locale" content="ja_JP" />
+  
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:url" content="https://ymotongpoo.github.io/amp-internal/post/appendix_runner/" />
+  <meta name="twitter:title" content="Appendix A: runner.jar" />
+  <meta name="twitter:description" content="runner.jar In the chapter 1, we saw that option entry_point is passed to runner.jar and that is defining the entry point of v0.js. But how can we know runner.jar is Closure Compiler? In ./runner directory, you find build.xml which is Ant build file for runner.jar. &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt; &lt;project default=&quot;jar&quot; basedir=&quot;.&quot; name=&quot;runner&quot;&gt; ... &lt;property name=&quot;dir.buildfile&quot; value=&quot;.&quot;/&gt; &lt;property name=&quot;src.dir&quot; value=&quot;${basedir}/src&quot;/&gt; &lt;property name=&quot;test.dir&quot; value=&quot;${basedir}/test&quot;/&gt; &lt;property name=&quot;build.dir&quot; value=&quot;${basedir}/build&quot;/&gt; &lt;property name=&quot;lib.dir&quot; value=&quot;${basedir}/lib&quot;/&gt; &lt;property name=&quot;dist.dir&quot; value=&quot;${basedir}/dist&quot;/&gt; &lt;property name=&quot;runner-jarfile&quot; value=&quot;${build.dir}/${ant.project.name}.jar&quot;/&gt; &lt;property name=&quot;compiler.dir&quot; value=&quot;${basedir}/../../third_party/closure-compiler&quot;/&gt; &lt;property name=&quot;classes.dir&quot; value=&quot;${build.dir}/classes&quot;/&gt; ..." />
+  <meta name="twitter:image" content="" />
+  
+  
+
+  <link rel="stylesheet" href='/amp-internal/css/main.css'>
+  <link rel="stylesheet" href='/amp-internal/css/monokai-sublime.css'>
+
+  <title>Appendix A: runner.jar | AMP internal </title>
+</head>
+
+<body>
+  <header>
+    <div id="social">
+      
+        <span><a href="https://twitter.com/amphtml/">Twitter</a></span>
+      
+      
+        <span><a href="https://github.com/ampproject">GitHub</a></span>
+      
+      
+    </div>
+    
+    <div id="branding">
+      <h1><a href="https://ymotongpoo.github.io/amp-internal/">AMP internal</a></h1>
+      <h2>Unofficial source code analysis of ampproject/amphtml</h2>
+    </div>
+  </header>
+  <main id="index">
+    <article>
+      <h1>Appendix A: runner.jar</h1>
+      <div class="entry-meta">
+        <span class="timestamp"><time>2016-10-12 16:02:37</time></span>
+        
+        
+        <span class="tag"><a href='/amp-internal/tags/closure-compiler'>#Closure Compiler</a></span>
+        
+        
+        <span class="tag"><a href='/amp-internal/tags/ant'>#Ant</a></span>
+        
+      </div>
+      
+
+<h2 id="runner-jar:a738aa2a24b61468f18e896e4072e2f3">runner.jar</h2>
+
+<p>In the <a href="./gulp/">chapter 1</a>, we saw that option <code>entry_point</code> is passed to <code>runner.jar</code> and that is defining the entry point of <code>v0.js</code>. But how can we know <code>runner.jar</code> is Closure Compiler?</p>
+
+<p>In <code>./runner</code> directory, you find <code>build.xml</code> which is Ant build file for <code>runner.jar</code>.</p>
+
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;
+&lt;project default=&quot;jar&quot; basedir=&quot;.&quot; name=&quot;runner&quot;&gt;
+...
+  &lt;property name=&quot;dir.buildfile&quot; value=&quot;.&quot;/&gt;
+  &lt;property name=&quot;src.dir&quot; value=&quot;${basedir}/src&quot;/&gt;
+  &lt;property name=&quot;test.dir&quot; value=&quot;${basedir}/test&quot;/&gt;
+  &lt;property name=&quot;build.dir&quot; value=&quot;${basedir}/build&quot;/&gt;
+  &lt;property name=&quot;lib.dir&quot; value=&quot;${basedir}/lib&quot;/&gt;
+  &lt;property name=&quot;dist.dir&quot; value=&quot;${basedir}/dist&quot;/&gt;
+  &lt;property name=&quot;runner-jarfile&quot; value=&quot;${build.dir}/${ant.project.name}.jar&quot;/&gt;
+  &lt;property name=&quot;compiler.dir&quot; value=&quot;${basedir}/../../third_party/closure-compiler&quot;/&gt;
+
+  &lt;property name=&quot;classes.dir&quot; value=&quot;${build.dir}/classes&quot;/&gt;
+...
+  &lt;target name=&quot;jar&quot; depends=&quot;compile&quot;&gt;
+    &lt;jar destfile=&quot;${runner-jarfile}&quot;&gt;
+      &lt;zipfileset src=&quot;${lib.dir}/jar-in-jar-loader.zip&quot;/&gt;
+      &lt;fileset dir=&quot;${classes.dir}&quot;/&gt;
+      &lt;fileset dir=&quot;${compiler.dir}&quot;&gt;
+        &lt;include name=&quot;compiler.jar&quot;/&gt;
+      &lt;/fileset&gt;
+      &lt;manifest&gt;
+        &lt;attribute name=&quot;Main-Class&quot; value=&quot;org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader&quot;/&gt;
+        &lt;attribute name=&quot;Rsrc-Main-Class&quot; value=&quot;org.ampproject.AmpCommandLineRunner&quot;/&gt;
+        &lt;attribute name=&quot;Class-Path&quot; value=&quot;.&quot;/&gt;
+        &lt;attribute name=&quot;Rsrc-Class-Path&quot; value=&quot;./ compiler.jar&quot;/&gt;
+      &lt;/manifest&gt;
+    &lt;/jar&gt;
+    &lt;mkdir dir=&quot;${dist.dir}&quot;/&gt;
+    &lt;copy file=&quot;${build.dir}/runner.jar&quot; todir=&quot;${dist.dir}&quot;/&gt;
+  &lt;/target&gt;
+...
+</code></pre>
+
+<p>Here, you see that the executable jar file is based on <code>org.ampproject.AmpCommandLineRunner</code> that is located in <code>./src/org/ampproject/AmpCommandLineRunner.java</code>.
+The <a href="http://static.javadoc.io/com.google.javascript/closure-compiler/v20160911/com/google/javascript/jscomp/CommandLineRunner.html">JavaDoc of it</a> tells that the command line tool.</p>
+
+    </article>
+  </main>
+  <nav>
+    
+    
+    <span class="next"><a href="https://ymotongpoo.github.io/amp-internal/post/gulp/">1. Generating AMP JS</a>&nbsp;&gt;&gt;</span>
+  </nav>
+  <footer>
+    <p class="copyright">source code in the docuements are all from AMP team under Apache License 2.0. texts are under Apache License 2.0.</p>
+  </footer>
+  <script src='/amp-internal/js/highlight.pack.js'></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  
+</body>
+
+</html>

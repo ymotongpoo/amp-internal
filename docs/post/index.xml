@@ -7,11 +7,64 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>source code in the docuements are all from AMP team under Apache License 2.0. texts are under Apache License 2.0.</copyright>
-    <lastBuildDate>Tue, 11 Oct 2016 16:14:23 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 12 Oct 2016 16:02:37 +0900</lastBuildDate>
     <atom:link href="https://ymotongpoo.github.io/amp-internal/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Generating AMP JS</title>
+      <title>Appendix A: runner.jar</title>
+      <link>https://ymotongpoo.github.io/amp-internal/post/appendix_runner/</link>
+      <pubDate>Wed, 12 Oct 2016 16:02:37 +0900</pubDate>
+      
+      <guid>https://ymotongpoo.github.io/amp-internal/post/appendix_runner/</guid>
+      <description>
+
+&lt;h2 id=&#34;runner-jar:a738aa2a24b61468f18e896e4072e2f3&#34;&gt;runner.jar&lt;/h2&gt;
+
+&lt;p&gt;In the &lt;a href=&#34;./gulp/&#34;&gt;chapter 1&lt;/a&gt;, we saw that option &lt;code&gt;entry_point&lt;/code&gt; is passed to &lt;code&gt;runner.jar&lt;/code&gt; and that is defining the entry point of &lt;code&gt;v0.js&lt;/code&gt;. But how can we know &lt;code&gt;runner.jar&lt;/code&gt; is Closure Compiler?&lt;/p&gt;
+
+&lt;p&gt;In &lt;code&gt;./runner&lt;/code&gt; directory, you find &lt;code&gt;build.xml&lt;/code&gt; which is Ant build file for &lt;code&gt;runner.jar&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot; standalone=&amp;quot;no&amp;quot;?&amp;gt;
+&amp;lt;project default=&amp;quot;jar&amp;quot; basedir=&amp;quot;.&amp;quot; name=&amp;quot;runner&amp;quot;&amp;gt;
+...
+  &amp;lt;property name=&amp;quot;dir.buildfile&amp;quot; value=&amp;quot;.&amp;quot;/&amp;gt;
+  &amp;lt;property name=&amp;quot;src.dir&amp;quot; value=&amp;quot;${basedir}/src&amp;quot;/&amp;gt;
+  &amp;lt;property name=&amp;quot;test.dir&amp;quot; value=&amp;quot;${basedir}/test&amp;quot;/&amp;gt;
+  &amp;lt;property name=&amp;quot;build.dir&amp;quot; value=&amp;quot;${basedir}/build&amp;quot;/&amp;gt;
+  &amp;lt;property name=&amp;quot;lib.dir&amp;quot; value=&amp;quot;${basedir}/lib&amp;quot;/&amp;gt;
+  &amp;lt;property name=&amp;quot;dist.dir&amp;quot; value=&amp;quot;${basedir}/dist&amp;quot;/&amp;gt;
+  &amp;lt;property name=&amp;quot;runner-jarfile&amp;quot; value=&amp;quot;${build.dir}/${ant.project.name}.jar&amp;quot;/&amp;gt;
+  &amp;lt;property name=&amp;quot;compiler.dir&amp;quot; value=&amp;quot;${basedir}/../../third_party/closure-compiler&amp;quot;/&amp;gt;
+
+  &amp;lt;property name=&amp;quot;classes.dir&amp;quot; value=&amp;quot;${build.dir}/classes&amp;quot;/&amp;gt;
+...
+  &amp;lt;target name=&amp;quot;jar&amp;quot; depends=&amp;quot;compile&amp;quot;&amp;gt;
+    &amp;lt;jar destfile=&amp;quot;${runner-jarfile}&amp;quot;&amp;gt;
+      &amp;lt;zipfileset src=&amp;quot;${lib.dir}/jar-in-jar-loader.zip&amp;quot;/&amp;gt;
+      &amp;lt;fileset dir=&amp;quot;${classes.dir}&amp;quot;/&amp;gt;
+      &amp;lt;fileset dir=&amp;quot;${compiler.dir}&amp;quot;&amp;gt;
+        &amp;lt;include name=&amp;quot;compiler.jar&amp;quot;/&amp;gt;
+      &amp;lt;/fileset&amp;gt;
+      &amp;lt;manifest&amp;gt;
+        &amp;lt;attribute name=&amp;quot;Main-Class&amp;quot; value=&amp;quot;org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader&amp;quot;/&amp;gt;
+        &amp;lt;attribute name=&amp;quot;Rsrc-Main-Class&amp;quot; value=&amp;quot;org.ampproject.AmpCommandLineRunner&amp;quot;/&amp;gt;
+        &amp;lt;attribute name=&amp;quot;Class-Path&amp;quot; value=&amp;quot;.&amp;quot;/&amp;gt;
+        &amp;lt;attribute name=&amp;quot;Rsrc-Class-Path&amp;quot; value=&amp;quot;./ compiler.jar&amp;quot;/&amp;gt;
+      &amp;lt;/manifest&amp;gt;
+    &amp;lt;/jar&amp;gt;
+    &amp;lt;mkdir dir=&amp;quot;${dist.dir}&amp;quot;/&amp;gt;
+    &amp;lt;copy file=&amp;quot;${build.dir}/runner.jar&amp;quot; todir=&amp;quot;${dist.dir}&amp;quot;/&amp;gt;
+  &amp;lt;/target&amp;gt;
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here, you see that the executable jar file is based on &lt;code&gt;org.ampproject.AmpCommandLineRunner&lt;/code&gt; that is located in &lt;code&gt;./src/org/ampproject/AmpCommandLineRunner.java&lt;/code&gt;.
+The &lt;a href=&#34;http://static.javadoc.io/com.google.javascript/closure-compiler/v20160911/com/google/javascript/jscomp/CommandLineRunner.html&#34;&gt;JavaDoc of it&lt;/a&gt; tells that the command line tool.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>1. Generating AMP JS</title>
       <link>https://ymotongpoo.github.io/amp-internal/post/gulp/</link>
       <pubDate>Tue, 11 Oct 2016 16:14:23 +0900</pubDate>
       
@@ -103,6 +156,8 @@ function compileJs(srcDir, srcFilename, destDir, options) {
   }
   ...
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;closurecompile:c34aea999ea1eeef6ae97c4fa3367837&#34;&gt;closureCompile()&lt;/h2&gt;
 
 &lt;p&gt;Ok, great. In the internal function &lt;code&gt;minify()&lt;/code&gt;, we see the line &lt;code&gt;closureCompile(srcDir + srcFilename, destDir, options.minifiedName, options)&lt;/code&gt;. &lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp1&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:c34aea999ea1eeef6ae97c4fa3367837:gulp1&#34;&gt;1&lt;/a&gt;&lt;/sup&gt; &lt;code&gt;closureCompile()&lt;/code&gt; is imported from &lt;code&gt;build-system/tasks/compile.js&lt;/code&gt;.&lt;/p&gt;
 
