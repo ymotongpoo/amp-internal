@@ -133,6 +133,123 @@ exports.closureCompile = function(entryModuleFilename, outputDir,
 
 It seems the internal function `start()` inside Promise() is doing something, because it is pushed to the array variable `queue` at the end of the Promise and called in the internal function `next()` that is called at the very last of the Promise. (`queue.shift()()` is.)
 
-And the function `compile()` is implemented like this. 
+The key function `compile()` is sort of a large function. It begins with like this.
+
+```js
+function compile(entryModuleFilenames, outputDir,
+    outputFilename, options) {
+  return new Promise(function(resolve, reject) {
+    ...
+``` 
+
+We see that this function returns `Promise`. And most of the implementation is spared for variable definitions based on arguments. So the main part of the `compile()` function is here:
+
+```js
+    var stream = gulp.src(srcs)
+        .pipe(closureCompiler(compilerOptions))
+        .on('error', function(err) {
+          console./*OK*/error('Error compiling', entryModuleFilenames);
+          console./*OK*/error(err.message);
+          process.exit(1);
+        });
+
+    // If we're only doing type checking, no need to output the files.
+    if (!argv.typecheck_only) {
+      stream = stream
+        .pipe(rename(outputFilename))
+        .pipe(replace(/\$internalRuntimeVersion\$/g, internalRuntimeVersion))
+        .pipe(replace(/\$internalRuntimeToken\$/g, internalRuntimeToken))
+        .pipe(gulp.dest(outputDir))
+        .on('end', function() {
+          console./*OK*/log('Compiled', entryModuleFilename, 'to',
+              outputDir + '/' + outputFilename, 'via', intermediateFilename);
+          gulp.src(intermediateFilename + '.map')
+              .pipe(rename(outputFilename + '.map'))
+              .pipe(gulp.dest(outputDir))
+              .on('end', resolve);
+        });
+    }
+
+    return stream;
+```
+
+Here you see that the stream is renamed with `.pipe(rename(outputFilename))` and written into `.pipe(gulp.dest(outputDir))`, where `outputFilename` is `v0.js` and `outputDir` is `./dist` respectively.
+
+So the summary of the process so far is:
+
+1. `compileJs()` calls `minify()` (`options.minify` is `true` on produciton release.)
+2. `minify()` calls `closureCompiler()` and then save it as `./dist/v0.js`.
+
+Now we grasped the overview of the file generation process. But how is `v0.js` starts it process? The hint is in the compiler options for Closure Compiler. The function `closureCompiler()` is external function defined in the npm module `gulp-closure-compiler` and how the object `compilerOptions` is handled is described [here](https://github.com/steida/gulp-closure-compiler/blob/master/index.js).
+
+```js
+module.exports = function(opt, execFile_opt) {
+  ...
+  // Can't use sindresorhus/dargs, compiler requires own syntax.
+  var flagsToArgs = function(flags) {
+    var args = [];
+    for (var flag in flags || {}) {
+      var values = flags[flag];
+      if (!Array.isArray(values)) values = [values];
+      values.forEach(function(value) {
+        if (flag === 'externs') {
+          glob.sync(value).forEach(function(resolved){
+            args.push(buildFlag(flag, resolved))
+          });
+        } else {
+          args.push(buildFlag(flag, value));
+        }
+      });
+    }
+    return args;
+  };
+
+  var buildFlag = function(flag, value){
+    return '--' + flag + (value === null ? '' : '=' + value)
+  };
+  ...
+  function() endStream() {
+    ...
+    args = args.concat(flagsToArgs(opt.compilerFlags));
+    ...
+  }
+```
+
+So, all options in `opt.compilerFlags` are expanded in the format of `--flag1=value1 --flag2=value2 ...` and are passed to Closure Compiler. Then let's get back to our `compile.js` and see what kind of flags are passed to `closureCompiler()` in the build process of `v0.js`. 
+
+```js
+    var entryModuleFilename;
+    if (entryModuleFilenames instanceof Array) {
+      entryModuleFilename = entryModuleFilenames[0];
+    } else {
+      entryModuleFilename = entryModuleFilenames;
+      entryModuleFilenames = [entryModuleFilename];
+    }
+    ...
+    // Add needed path for extensions.
+    // Instead of globbing all extensions, this will only add the actual
+    // extension path for much quicker build times.
+    entryModuleFilenames.forEach(function(filename) {
+      if (filename.indexOf('extensions/') == -1) {
+        return;
+      }
+      var path = filename.replace(/\/[^/]+\.js$/, '/**/*.js');
+      srcs.push(path);
+    });
+    ...
+    var compilerOptions = {
+      compilerPath: 'build-system/runner/dist/runner.jar',
+      ...
+      compilerFlags: {
+        ...
+        entry_point: entryModuleFilenames,
+        ...
+```
+
+Well, skipping the internals of `runner.jar` because it is not essential here [^gulp2], but the option `entry_point` is providing the entry point of `v0.js`, and the value is `entryModuleFilename`, which is in this case `./src/amp-babel.js`.
+
+Now finally we got the point. So our AMP JS file `v0.js` is concatted and minified from lots of JavaScript files and its entry point is `./src/amp-babel.js`. In [next chapter](./amp/), we dig into the file.
 
 [^gulp1]: `appendToCompileFile()` is called only in the case of the `srcFilename` is `"amp-viz-vega.js"` so ignore it in this case. 
+
+[^gulp2]: Added appendix for the build process of `runner.jar`. See [Appendix](./appendix_runner/) for details.
