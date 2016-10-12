@@ -142,7 +142,120 @@ exports.closureCompile = function(entryModuleFilename, outputDir,
 
 &lt;p&gt;It seems the internal function &lt;code&gt;start()&lt;/code&gt; inside Promise() is doing something, because it is pushed to the array variable &lt;code&gt;queue&lt;/code&gt; at the end of the Promise and called in the internal function &lt;code&gt;next()&lt;/code&gt; that is called at the very last of the Promise. (&lt;code&gt;queue.shift()()&lt;/code&gt; is.)&lt;/p&gt;
 
-&lt;p&gt;And the function &lt;code&gt;compile()&lt;/code&gt; is implemented like this.&lt;/p&gt;
+&lt;p&gt;The key function &lt;code&gt;compile()&lt;/code&gt; is sort of a large function. It begins with like this.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;function compile(entryModuleFilenames, outputDir,
+    outputFilename, options) {
+  return new Promise(function(resolve, reject) {
+    ...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We see that this function returns &lt;code&gt;Promise&lt;/code&gt;. And most of the implementation is spared for variable definitions based on arguments. So the main part of the &lt;code&gt;compile()&lt;/code&gt; function is here:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;    var stream = gulp.src(srcs)
+        .pipe(closureCompiler(compilerOptions))
+        .on(&#39;error&#39;, function(err) {
+          console./*OK*/error(&#39;Error compiling&#39;, entryModuleFilenames);
+          console./*OK*/error(err.message);
+          process.exit(1);
+        });
+
+    // If we&#39;re only doing type checking, no need to output the files.
+    if (!argv.typecheck_only) {
+      stream = stream
+        .pipe(rename(outputFilename))
+        .pipe(replace(/\$internalRuntimeVersion\$/g, internalRuntimeVersion))
+        .pipe(replace(/\$internalRuntimeToken\$/g, internalRuntimeToken))
+        .pipe(gulp.dest(outputDir))
+        .on(&#39;end&#39;, function() {
+          console./*OK*/log(&#39;Compiled&#39;, entryModuleFilename, &#39;to&#39;,
+              outputDir + &#39;/&#39; + outputFilename, &#39;via&#39;, intermediateFilename);
+          gulp.src(intermediateFilename + &#39;.map&#39;)
+              .pipe(rename(outputFilename + &#39;.map&#39;))
+              .pipe(gulp.dest(outputDir))
+              .on(&#39;end&#39;, resolve);
+        });
+    }
+
+    return stream;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Here you see that the stream is renamed with &lt;code&gt;.pipe(rename(outputFilename))&lt;/code&gt; and written into &lt;code&gt;.pipe(gulp.dest(outputDir))&lt;/code&gt;, where &lt;code&gt;outputFilename&lt;/code&gt; is &lt;code&gt;v0.js&lt;/code&gt; and &lt;code&gt;outputDir&lt;/code&gt; is &lt;code&gt;./dist&lt;/code&gt; respectively.&lt;/p&gt;
+
+&lt;p&gt;So the summary of the process so far is:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;compileJs()&lt;/code&gt; calls &lt;code&gt;minify()&lt;/code&gt; (&lt;code&gt;options.minify&lt;/code&gt; is &lt;code&gt;true&lt;/code&gt; on produciton release.)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;minify()&lt;/code&gt; calls &lt;code&gt;closureCompiler()&lt;/code&gt; and then save it as &lt;code&gt;./dist/v0.js&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Now we grasped the overview of the file generation process. But how is &lt;code&gt;v0.js&lt;/code&gt; starts it process? The hint is in the compiler options for Closure Compiler. The function &lt;code&gt;closureCompiler()&lt;/code&gt; is external function defined in the npm module &lt;code&gt;gulp-closure-compiler&lt;/code&gt; and how the object &lt;code&gt;compilerOptions&lt;/code&gt; is handled is described &lt;a href=&#34;https://github.com/steida/gulp-closure-compiler/blob/master/index.js&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;module.exports = function(opt, execFile_opt) {
+  ...
+  // Can&#39;t use sindresorhus/dargs, compiler requires own syntax.
+  var flagsToArgs = function(flags) {
+    var args = [];
+    for (var flag in flags || {}) {
+      var values = flags[flag];
+      if (!Array.isArray(values)) values = [values];
+      values.forEach(function(value) {
+        if (flag === &#39;externs&#39;) {
+          glob.sync(value).forEach(function(resolved){
+            args.push(buildFlag(flag, resolved))
+          });
+        } else {
+          args.push(buildFlag(flag, value));
+        }
+      });
+    }
+    return args;
+  };
+
+  var buildFlag = function(flag, value){
+    return &#39;--&#39; + flag + (value === null ? &#39;&#39; : &#39;=&#39; + value)
+  };
+  ...
+  function() endStream() {
+    ...
+    args = args.concat(flagsToArgs(opt.compilerFlags));
+    ...
+  }
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So, all options in &lt;code&gt;opt.compilerFlags&lt;/code&gt; are expanded in the format of &lt;code&gt;--flag1=value1 --flag2=value2 ...&lt;/code&gt; and are passed to Closure Compiler. Then let&amp;rsquo;s get back to our &lt;code&gt;compile.js&lt;/code&gt; and see what kind of flags are passed to &lt;code&gt;closureCompiler()&lt;/code&gt; in the build process of &lt;code&gt;v0.js&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;    var entryModuleFilename;
+    if (entryModuleFilenames instanceof Array) {
+      entryModuleFilename = entryModuleFilenames[0];
+    } else {
+      entryModuleFilename = entryModuleFilenames;
+      entryModuleFilenames = [entryModuleFilename];
+    }
+    ...
+    // Add needed path for extensions.
+    // Instead of globbing all extensions, this will only add the actual
+    // extension path for much quicker build times.
+    entryModuleFilenames.forEach(function(filename) {
+      if (filename.indexOf(&#39;extensions/&#39;) == -1) {
+        return;
+      }
+      var path = filename.replace(/\/[^/]+\.js$/, &#39;/**/*.js&#39;);
+      srcs.push(path);
+    });
+    ...
+    var compilerOptions = {
+      compilerPath: &#39;build-system/runner/dist/runner.jar&#39;,
+      ...
+      compilerFlags: {
+        ...
+        entry_point: entryModuleFilenames,
+        ...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Well, skipping the internals of &lt;code&gt;runner.jar&lt;/code&gt; because it is not essential here &lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;, but the option &lt;code&gt;entry_point&lt;/code&gt; is providing the entry point of &lt;code&gt;v0.js&lt;/code&gt;, and the value is &lt;code&gt;entryModuleFilename&lt;/code&gt;, which is in this case &lt;code&gt;./src/amp-babel.js&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now finally we got the point. So our AMP JS file &lt;code&gt;v0.js&lt;/code&gt; is concatted and minified from lots of JavaScript files and its entry point is &lt;code&gt;./src/amp-babel.js&lt;/code&gt;. In &lt;a href=&#34;./amp/&#34;&gt;next chapter&lt;/a&gt;, we dig into the file.&lt;/p&gt;
 &lt;div class=&#34;footnotes&#34;&gt;
 
 &lt;hr /&gt;
@@ -150,6 +263,8 @@ exports.closureCompile = function(entryModuleFilename, outputDir,
 &lt;ol&gt;
 &lt;li id=&#34;fn:c34aea999ea1eeef6ae97c4fa3367837:gulp1&#34;&gt;&lt;code&gt;appendToCompileFile()&lt;/code&gt; is called only in the case of the &lt;code&gt;srcFilename&lt;/code&gt; is &lt;code&gt;&amp;quot;amp-viz-vega.js&amp;quot;&lt;/code&gt; so ignore it in this case.
  &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li id=&#34;fn:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;Added appendix for the build process of &lt;code&gt;runner.jar&lt;/code&gt;. See &lt;a href=&#34;./appendix_runner/&#34;&gt;Appendix&lt;/a&gt; for details.
+ &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;
 </description>
