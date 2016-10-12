@@ -310,7 +310,7 @@ exports.closureCompile = function(entryModuleFilename, outputDir,
 
 &lt;p&gt;Well, skipping the internals of &lt;code&gt;runner.jar&lt;/code&gt; because it is not essential here &lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;, but the option &lt;code&gt;entry_point&lt;/code&gt; is providing the entry point of &lt;code&gt;v0.js&lt;/code&gt;, and the value is &lt;code&gt;entryModuleFilename&lt;/code&gt;, which is in this case &lt;code&gt;./src/amp-babel.js&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;Now finally we got the point. So our AMP JS file &lt;code&gt;v0.js&lt;/code&gt; is concatted and minified from lots of JavaScript files and its entry point is &lt;code&gt;./src/amp-babel.js&lt;/code&gt;. In &lt;a href=&#34;./amp/&#34;&gt;next chapter&lt;/a&gt;, we dig into the file.&lt;/p&gt;
+&lt;p&gt;Now finally we got the point. So our AMP JS file &lt;code&gt;v0.js&lt;/code&gt; is concatted and minified from lots of JavaScript files and its entry point is &lt;code&gt;./src/amp-babel.js&lt;/code&gt;. In &lt;a href=&#34;../amp/&#34;&gt;next chapter&lt;/a&gt;, we dig into the file.&lt;/p&gt;
 &lt;div class=&#34;footnotes&#34;&gt;
 
 &lt;hr /&gt;
@@ -318,7 +318,7 @@ exports.closureCompile = function(entryModuleFilename, outputDir,
 &lt;ol&gt;
 &lt;li id=&#34;fn:c34aea999ea1eeef6ae97c4fa3367837:gulp1&#34;&gt;&lt;code&gt;appendToCompileFile()&lt;/code&gt; is called only in the case of the &lt;code&gt;srcFilename&lt;/code&gt; is &lt;code&gt;&amp;quot;amp-viz-vega.js&amp;quot;&lt;/code&gt; so ignore it in this case.
  &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp1&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li id=&#34;fn:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;Added appendix for the build process of &lt;code&gt;runner.jar&lt;/code&gt;. See &lt;a href=&#34;./appendix_runner/&#34;&gt;Appendix&lt;/a&gt; for details.
+&lt;li id=&#34;fn:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;Added appendix for the build process of &lt;code&gt;runner.jar&lt;/code&gt;. See &lt;a href=&#34;../appendix_runner/&#34;&gt;Appendix&lt;/a&gt; for details.
  &lt;a class=&#34;footnote-return&#34; href=&#34;#fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;&lt;sup&gt;[return]&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;

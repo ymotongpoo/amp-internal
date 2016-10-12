@@ -249,8 +249,8 @@ So, all options in `opt.compilerFlags` are expanded in the format of `--flag1=va
 
 Well, skipping the internals of `runner.jar` because it is not essential here [^gulp2], but the option `entry_point` is providing the entry point of `v0.js`, and the value is `entryModuleFilename`, which is in this case `./src/amp-babel.js`.
 
-Now finally we got the point. So our AMP JS file `v0.js` is concatted and minified from lots of JavaScript files and its entry point is `./src/amp-babel.js`. In [next chapter](./amp/), we dig into the file.
+Now finally we got the point. So our AMP JS file `v0.js` is concatted and minified from lots of JavaScript files and its entry point is `./src/amp-babel.js`. In [next chapter](../amp/), we dig into the file.
 
 [^gulp1]: `appendToCompileFile()` is called only in the case of the `srcFilename` is `"amp-viz-vega.js"` so ignore it in this case. 
 
-[^gulp2]: Added appendix for the build process of `runner.jar`. See [Appendix](./appendix_runner/) for details.
+[^gulp2]: Added appendix for the build process of `runner.jar`. See [Appendix](../appendix_runner/) for details.
