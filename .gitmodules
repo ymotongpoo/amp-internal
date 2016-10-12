@@ -1,0 +1,6 @@
+[submodule "themes/simpleblog"]
+	path = themes/simpleblog
+	url = https://github.com/ymotongpoo/simpleblog.git
+[submodule "amphtml"]
+	path = amphtml
+	url = https://github.com/ampproject/amphtml.git

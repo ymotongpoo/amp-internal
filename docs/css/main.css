@@ -1,0 +1,116 @@
+/* color pallete */
+/* layout */
+@import url("http://fonts.googleapis.com/earlyaccess/notosansjapanese.css");
+* {
+  box-sizing: border-box; }
+
+body {
+  font-family: "Noto Sans Japanese", "Open Sans", Helvetica, sans-serif;
+  font-size: 16px;
+  color: #636363; }
+
+pre, code, var, samp, kbd {
+  font-family: Consolas, "Courier New", Courier, Monaco, monospace;
+  font-size: 14px; }
+
+header {
+  color: #f5f5f5;
+  font-family: "Open Sans Condensed", Helvetica, sans-serif;
+  background: #03a9f4;
+  padding: 24px; }
+  header #branding {
+    max-width: 900px;
+    height: 100px;
+    margin: auto; }
+    header #branding h1 {
+      font-size: 36px;
+      text-transform: uppercase; }
+    header #branding h2 {
+      font-size: 18px; }
+    header #branding a {
+      color: inherit;
+      text-decoration: none; }
+  header #social a {
+    color: inherit;
+    text-decoration: none; }
+    header #social a:hover {
+      text-decoration: underline; }
+  header #social span:not(:last-child)::after {
+    content: " | "; }
+
+footer {
+  max-width: 900px;
+  margin: auto; }
+
+span.timestamp::after {
+  content: "|";
+  margin: 0 7px; }
+
+span.tag:not(:last-child)::after {
+  content: ","; }
+
+span.tag a {
+  color: #bdbdbd; }
+  span.tag a:hover {
+    color: #00bcd4;
+    text-decoration: none; }
+
+main {
+  max-width: 900px;
+  margin: auto; }
+  main a {
+    color: #00bcd4;
+    text-decoration: none; }
+    main a:hover {
+      text-decoration: underline; }
+
+main#index article {
+  padding: 24px;
+  width: 100%; }
+  main#index article .entry-meta {
+    color: #bdbdbd; }
+  main#index article h1, main#index article h2, main#index article h3, main#index article h4, main#index article h5, main#index article h6 {
+    font-family: "Open Sans Condensed", Helvetica, sans-serif; }
+  main#index article h1 {
+    color: #757575;
+    font-size: 24px; }
+  main#index article h2 {
+    color: #757575;
+    font-size: 18px; }
+
+main#list h1 {
+  color: #757575;
+  font-size: 18px; }
+
+main#list .list-summary:not(:last-child) {
+  border-bottom: 1px solid #777777; }
+
+main#list .list-meta {
+  color: #bdbdbd;
+  margin-bottom: 24px; }
+
+nav {
+  max-width: 900px;
+  margin: auto;
+  color: #bdbdbd; }
+  nav:after {
+    content: "";
+    display: block;
+    clear: both; }
+  nav span.prev {
+    max-width: 300px;
+    float: left; }
+  nav span.next {
+    max-width: 300px;
+    float: right; }
+  nav a {
+    color: inherit;
+    text-decoration: none; }
+    nav a:hover {
+      color: #00bcd4; }
+  nav ul.pagination li {
+    display: inline; }
+
+.copyright {
+  color: #bdbdbd;
+  font-size: 12px; }
