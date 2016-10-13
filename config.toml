@@ -4,6 +4,7 @@ languageCode = "en-us"
 copyright = "source code in the docuements are all from AMP team under Apache License 2.0. texts are under Apache License 2.0."
 
 [params]
+ga = "UA-6420772-12"
 twitter = "amphtml"
 github = "ampproject"
 description = "Unofficial source code analysis of ampproject/amphtml"
