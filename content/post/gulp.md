@@ -249,7 +249,50 @@ So, all options in `opt.compilerFlags` are expanded in the format of `--flag1=va
 
 Well, skipping the internals of `runner.jar` because it is not essential here [^gulp2], but the option `entry_point` is providing the entry point of `v0.js`, and the value is `entryModuleFilename`, which is in this case `./src/amp-babel.js`.
 
-Now finally we got the point. So our AMP JS file `v0.js` is concatted and minified from lots of JavaScript files and its entry point is `./src/amp-babel.js`. In [next chapter](../amp/), we dig into the file.
+Now finally we got the point. So our AMP JS file `v0.js` is concatted and minified from lots of JavaScript files and its entry point is `./src/amp-babel.js`.
+
+## amp-babel.js
+
+`amp-babel.js` is tiny file that only has 2 lines of code as follows.
+
+```js
+import '../third_party/babel/custom-babel-helpers';
+import './amp';
+```
+
+And here, let's go back to `./build-system/tasks/compile.js` and see the comments in `closureCompile()`.
+
+```js
+// Compiles AMP with the closure compiler. This is intended only for
+// production use. During development we intent to continue using
+// babel, as it has much faster incremental compilation.
+exports.closureCompile = function(entryModuleFilename, outputDir,
+    outputFilename, options) {
+```
+
+As you see in `compileJs()`, in production release process, AMP project does not use babel but Closure Compiler to pack all code into one release file. You can confirm this in the constant `srcs` in `compile()` function.
+
+```js
+    const srcs = [
+      ...
+      'extensions/amp-analytics/**/*.js',
+      'src/**/*.js',
+      '!third_party/babel/custom-babel-helpers.js',
+      ...
+    ];
+    ...
+    var stream = gulp.src(srcs)
+        .pipe(closureCompiler(compilerOptions))
+        .on('error', function(err) {
+          console./*OK*/error('Error compiling', entryModuleFilenames);
+          console./*OK*/error(err.message);
+          process.exit(1);
+        });
+```
+
+As you see, `third_party/babel/custom-babel-helpers.js` is excluded from build process. So now we know that `src/amp.js` is the actual entry point.
+
+In [next chapter](../amp/), we dig into the file.
 
 [^gulp1]: `appendToCompileFile()` is called only in the case of the `srcFilename` is `"amp-viz-vega.js"` so ignore it in this case. 
 

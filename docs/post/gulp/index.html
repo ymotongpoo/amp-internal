@@ -298,7 +298,47 @@ exports.closureCompile = function(entryModuleFilename, outputDir,
 
 <p>Well, skipping the internals of <code>runner.jar</code> because it is not essential here <sup class="footnote-ref" id="fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp2"><a rel="footnote" href="#fn:c34aea999ea1eeef6ae97c4fa3367837:gulp2">2</a></sup>, but the option <code>entry_point</code> is providing the entry point of <code>v0.js</code>, and the value is <code>entryModuleFilename</code>, which is in this case <code>./src/amp-babel.js</code>.</p>
 
-<p>Now finally we got the point. So our AMP JS file <code>v0.js</code> is concatted and minified from lots of JavaScript files and its entry point is <code>./src/amp-babel.js</code>. In <a href="../amp/">next chapter</a>, we dig into the file.</p>
+<p>Now finally we got the point. So our AMP JS file <code>v0.js</code> is concatted and minified from lots of JavaScript files and its entry point is <code>./src/amp-babel.js</code>.</p>
+
+<h2 id="amp-babel-js:c34aea999ea1eeef6ae97c4fa3367837">amp-babel.js</h2>
+
+<p><code>amp-babel.js</code> is tiny file that only has 2 lines of code as follows.</p>
+
+<pre><code class="language-js">import '../third_party/babel/custom-babel-helpers';
+import './amp';
+</code></pre>
+
+<p>And here, let&rsquo;s go back to <code>./build-system/tasks/compile.js</code> and see the comments in <code>closureCompile()</code>.</p>
+
+<pre><code class="language-js">// Compiles AMP with the closure compiler. This is intended only for
+// production use. During development we intent to continue using
+// babel, as it has much faster incremental compilation.
+exports.closureCompile = function(entryModuleFilename, outputDir,
+    outputFilename, options) {
+</code></pre>
+
+<p>As you see in <code>compileJs()</code>, in production release process, AMP project does not use babel but Closure Compiler to pack all code into one release file. You can confirm this in the constant <code>srcs</code> in <code>compile()</code> function.</p>
+
+<pre><code class="language-js">    const srcs = [
+      ...
+      'extensions/amp-analytics/**/*.js',
+      'src/**/*.js',
+      '!third_party/babel/custom-babel-helpers.js',
+      ...
+    ];
+    ...
+    var stream = gulp.src(srcs)
+        .pipe(closureCompiler(compilerOptions))
+        .on('error', function(err) {
+          console./*OK*/error('Error compiling', entryModuleFilenames);
+          console./*OK*/error(err.message);
+          process.exit(1);
+        });
+</code></pre>
+
+<p>As you see, <code>third_party/babel/custom-babel-helpers.js</code> is excluded from build process. So now we know that <code>src/amp.js</code> is the actual entry point.</p>
+
+<p>In <a href="../amp/">next chapter</a>, we dig into the file.</p>
 <div class="footnotes">
 
 <hr />

@@ -257,7 +257,47 @@ exports.closureCompile = function(entryModuleFilename, outputDir,
 
 &lt;p&gt;Well, skipping the internals of &lt;code&gt;runner.jar&lt;/code&gt; because it is not essential here &lt;sup class=&#34;footnote-ref&#34; id=&#34;fnref:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;&lt;a rel=&#34;footnote&#34; href=&#34;#fn:c34aea999ea1eeef6ae97c4fa3367837:gulp2&#34;&gt;2&lt;/a&gt;&lt;/sup&gt;, but the option &lt;code&gt;entry_point&lt;/code&gt; is providing the entry point of &lt;code&gt;v0.js&lt;/code&gt;, and the value is &lt;code&gt;entryModuleFilename&lt;/code&gt;, which is in this case &lt;code&gt;./src/amp-babel.js&lt;/code&gt;.&lt;/p&gt;
 
-&lt;p&gt;Now finally we got the point. So our AMP JS file &lt;code&gt;v0.js&lt;/code&gt; is concatted and minified from lots of JavaScript files and its entry point is &lt;code&gt;./src/amp-babel.js&lt;/code&gt;. In &lt;a href=&#34;../amp/&#34;&gt;next chapter&lt;/a&gt;, we dig into the file.&lt;/p&gt;
+&lt;p&gt;Now finally we got the point. So our AMP JS file &lt;code&gt;v0.js&lt;/code&gt; is concatted and minified from lots of JavaScript files and its entry point is &lt;code&gt;./src/amp-babel.js&lt;/code&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;amp-babel-js:c34aea999ea1eeef6ae97c4fa3367837&#34;&gt;amp-babel.js&lt;/h2&gt;
+
+&lt;p&gt;&lt;code&gt;amp-babel.js&lt;/code&gt; is tiny file that only has 2 lines of code as follows.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;import &#39;../third_party/babel/custom-babel-helpers&#39;;
+import &#39;./amp&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;And here, let&amp;rsquo;s go back to &lt;code&gt;./build-system/tasks/compile.js&lt;/code&gt; and see the comments in &lt;code&gt;closureCompile()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;// Compiles AMP with the closure compiler. This is intended only for
+// production use. During development we intent to continue using
+// babel, as it has much faster incremental compilation.
+exports.closureCompile = function(entryModuleFilename, outputDir,
+    outputFilename, options) {
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you see in &lt;code&gt;compileJs()&lt;/code&gt;, in production release process, AMP project does not use babel but Closure Compiler to pack all code into one release file. You can confirm this in the constant &lt;code&gt;srcs&lt;/code&gt; in &lt;code&gt;compile()&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-js&#34;&gt;    const srcs = [
+      ...
+      &#39;extensions/amp-analytics/**/*.js&#39;,
+      &#39;src/**/*.js&#39;,
+      &#39;!third_party/babel/custom-babel-helpers.js&#39;,
+      ...
+    ];
+    ...
+    var stream = gulp.src(srcs)
+        .pipe(closureCompiler(compilerOptions))
+        .on(&#39;error&#39;, function(err) {
+          console./*OK*/error(&#39;Error compiling&#39;, entryModuleFilenames);
+          console./*OK*/error(err.message);
+          process.exit(1);
+        });
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you see, &lt;code&gt;third_party/babel/custom-babel-helpers.js&lt;/code&gt; is excluded from build process. So now we know that &lt;code&gt;src/amp.js&lt;/code&gt; is the actual entry point.&lt;/p&gt;
+
+&lt;p&gt;In &lt;a href=&#34;../amp/&#34;&gt;next chapter&lt;/a&gt;, we dig into the file.&lt;/p&gt;
 &lt;div class=&#34;footnotes&#34;&gt;
 
 &lt;hr /&gt;
